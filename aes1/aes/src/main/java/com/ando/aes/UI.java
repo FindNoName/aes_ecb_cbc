@@ -33,7 +33,7 @@ public class UI {
         // 创建主窗口
         JFrame frame = new JFrame("AES Encryption/Decryption System 2.0");
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        frame.setSize(800, 600);
+        frame.setSize(800, 700);
         frame.setLocationRelativeTo(null); // 居中显示
         
         // 创建面板
@@ -97,8 +97,22 @@ public class UI {
         JTextField keyField = new JTextField("1234567890123456", 16);
         gbc.gridx = 1;
         gbc.gridy = 2;
-        gbc.gridwidth = 3;
+        gbc.gridwidth = 2;
         topPanel.add(keyField, gbc);
+        
+        // 随机生成密钥按钮
+        JButton generateKeyButton = new JButton("Generate Key");
+        gbc.gridx = 3;
+        gbc.gridy = 2;
+        gbc.gridwidth = 1;
+        topPanel.add(generateKeyButton, gbc);
+        
+        // 随机生成密钥按钮的事件监听器
+        generateKeyButton.addActionListener(e -> {
+            String generatedKey = generateRandomKey(16); // 生成16字符的随机密钥
+            keyField.setText(generatedKey); // 将密钥填入输入框
+            log("Random key generated: " + generatedKey);
+        });
         
         // 中部面板 - 控制按钮
         JPanel centerPanel = new JPanel();
@@ -124,11 +138,11 @@ public class UI {
         JButton clearButton = new JButton("Clear Logs");
         clearButton.setFont(buttonFont);
 
-        ecbEncryptButton.setPreferredSize(new Dimension(100, 30));
-        ecbDecryptButton.setPreferredSize(new Dimension(100, 30));
-        cbcEncryptButton.setPreferredSize(new Dimension(100, 30));
-        cbcDecryptButton.setPreferredSize(new Dimension(100, 30));
-        clearButton.setPreferredSize(new Dimension(100, 30));
+        ecbEncryptButton.setPreferredSize(new Dimension(130, 50));
+        ecbDecryptButton.setPreferredSize(new Dimension(130, 50));
+        cbcEncryptButton.setPreferredSize(new Dimension(130, 50));
+        cbcDecryptButton.setPreferredSize(new Dimension(130, 50));
+        clearButton.setPreferredSize(new Dimension(100, 50));
         
         centerPanel.add(ecbEncryptButton);
         centerPanel.add(ecbDecryptButton);
@@ -220,20 +234,16 @@ public class UI {
                 log("Destination file: " + destPath);
                 log("Key: " + key);
                 
-                // 显示原文件内容
-                byte[] fileContent = Files.readAllBytes(Paths.get(srcPath));
-                String plainText = new String(fileContent, "UTF-8");
-                log("Original file content: " + plainText);
+                // 记录开始时间
+                long startTime = System.nanoTime();
                 
                 // 执行加密
                 EncryptFile.encryptFileECB(srcPath, destPath, key);
                 
-                // 显示加密后内容
-                byte[] encryptedContent = Files.readAllBytes(Paths.get(destPath));
-                String encryptedText = new String(encryptedContent, "UTF-8");
-                log("Encrypted content: " + encryptedText);
-                
-                log("ECB encryption completed, result saved to: " + destPath);
+                // 记录结束时间
+                long endTime = System.nanoTime();
+                long duration = (endTime - startTime) / 1_000_000; // 转换为毫秒
+                log("ECB encryption completed in " + duration + " ms");
                 setStatus("ECB encryption completed");
                 
                 JOptionPane.showMessageDialog(frame, "ECB encryption successful!", "Success", JOptionPane.INFORMATION_MESSAGE);
@@ -314,20 +324,16 @@ public class UI {
                 log("Destination file: " + destPath);
                 log("Key: " + key);
                 
-                // 显示原文件内容
-                byte[] fileContent = Files.readAllBytes(Paths.get(srcPath));
-                String plainText = new String(fileContent, "UTF-8");
-                log("Original file content: " + plainText);
+                // 记录开始时间
+                long startTime = System.nanoTime();
                 
                 // 执行加密
                 EncryptFile.encryptFileCBC(srcPath, destPath, key);
                 
-                // 显示加密后内容
-                byte[] encryptedContent = Files.readAllBytes(Paths.get(destPath));
-                String encryptedText = new String(encryptedContent, "UTF-8");
-                log("Encrypted content: " + encryptedText);
-                
-                log("CBC encryption completed, result saved to: " + destPath);
+                // 记录结束时间
+                long endTime = System.nanoTime();
+                long duration = (endTime - startTime) / 1_000_000; // 转换为毫秒
+                log("CBC encryption completed in " + duration + " ms");
                 setStatus("CBC encryption completed");
                 
                 JOptionPane.showMessageDialog(frame, "CBC encryption successful!", "Success", JOptionPane.INFORMATION_MESSAGE);
@@ -407,5 +413,16 @@ public class UI {
     // 设置状态栏
     private static void setStatus(String status) {
         statusLabel.setText(status);
+    }
+    
+    // 添加生成随机密钥的方法
+    private static String generateRandomKey(int length) {
+        String characters = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+        StringBuilder key = new StringBuilder();
+        for (int i = 0; i < length; i++) {
+            int index = (int) (Math.random() * characters.length());
+            key.append(characters.charAt(index));
+        }
+        return key.toString();
     }
 }
