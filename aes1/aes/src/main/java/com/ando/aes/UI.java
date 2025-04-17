@@ -5,6 +5,8 @@ import java.awt.event.*;
 import java.io.File;
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
+import javax.swing.border.TitledBorder;
+import java.awt.geom.RoundRectangle2D;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import mdlaf.MaterialLookAndFeel;
@@ -24,8 +26,10 @@ public class UI {
     
     public static void main(String[] args) {
         try {
-            // 使用自定义的 MaterialOrientalFontsTheme
-            UIManager.setLookAndFeel(new MaterialLookAndFeel(new MaterialOrientalFontsTheme()));
+            // 使用自定义主题
+            MaterialLookAndFeel materialLookAndFeel = new MaterialLookAndFeel(new MaterialLiteTheme());
+            UIManager.setLookAndFeel(materialLookAndFeel);
+            UIManager.setLookAndFeel(new MaterialLookAndFeel());
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -34,16 +38,41 @@ public class UI {
         JFrame frame = new JFrame("AES Encryption/Decryption System 2.0");
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         frame.setSize(800, 700);
-        frame.setLocationRelativeTo(null); // 居中显示
+        frame.setLocationRelativeTo(null);
         
-        // 创建面板
-        JPanel mainPanel = new JPanel(new BorderLayout(10, 10));
-        mainPanel.setBorder(new EmptyBorder(10, 10, 10, 10));
-        
-        // 创建顶部面板 - 文件选择和密钥输入
-        JPanel topPanel = new JPanel(new GridBagLayout());
-        topPanel.setBorder(BorderFactory.createTitledBorder("File Selection and Key Settings"));
-        topPanel.setBackground(Color.WHITE);
+        // 创建圆角面板
+        class RoundedPanel extends JPanel {
+            private int radius = 20;
+            
+            public RoundedPanel(LayoutManager layout) {
+                super(layout);
+                setOpaque(false);
+            }
+            
+            @Override
+            protected void paintComponent(Graphics g) {
+                Graphics2D g2 = (Graphics2D) g.create();
+                g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+                g2.setColor(getBackground());
+                g2.fill(new RoundRectangle2D.Double(0, 0, getWidth()-1, getHeight()-1, radius, radius));
+                g2.dispose();
+            }
+        }
+
+        // 修改主面板为圆角面板
+        RoundedPanel mainPanel = new RoundedPanel(new BorderLayout(10, 10));
+        mainPanel.setBorder(new EmptyBorder(15, 15, 15, 15));
+        mainPanel.setBackground(new Color(255, 255, 255, 240));
+
+        // 修改顶部面板
+        RoundedPanel topPanel = new RoundedPanel(new GridBagLayout());
+        topPanel.setBorder(BorderFactory.createCompoundBorder(
+            new EmptyBorder(5, 5, 5, 5),
+            BorderFactory.createTitledBorder(null, "File Selection and Key Settings",
+                TitledBorder.DEFAULT_JUSTIFICATION, TitledBorder.DEFAULT_POSITION,
+                new Font("Segoe UI", Font.BOLD, 12))
+        ));
+        topPanel.setBackground(new Color(245, 245, 250, 240));
         
         GridBagConstraints gbc = new GridBagConstraints();
         gbc.fill = GridBagConstraints.HORIZONTAL;
@@ -114,29 +143,45 @@ public class UI {
             log("Random key generated: " + generatedKey);
         });
         
-        // 中部面板 - 控制按钮
-        JPanel centerPanel = new JPanel();
-        centerPanel.setLayout(new FlowLayout(FlowLayout.CENTER, 15, 10));
-        centerPanel.setBorder(BorderFactory.createTitledBorder("Operations"));
-        centerPanel.setBackground(Color.WHITE);
+        // 修改中部面板
+        RoundedPanel centerPanel = new RoundedPanel(new FlowLayout(FlowLayout.CENTER, 15, 10));
+        centerPanel.setBorder(BorderFactory.createCompoundBorder(
+            new EmptyBorder(5, 5, 5, 5),
+            BorderFactory.createTitledBorder(null, "Operations",
+                TitledBorder.DEFAULT_JUSTIFICATION, TitledBorder.DEFAULT_POSITION,
+                new Font("Segoe UI", Font.BOLD, 12))
+        ));
+        centerPanel.setBackground(new Color(245, 245, 250, 240));
         
-        // 设置按钮字体以支持中文
-        Font buttonFont = new Font("Microsoft YaHei", Font.PLAIN, 14);
+        // 美化按钮样式
+        class StyledButton extends JButton {
+            public StyledButton(String text) {
+            super(text);
+            setFont(new Font("Segoe UI", Font.PLAIN, 12));
+            setForeground(Color.BLACK); // 修改文字颜色为黑色
+            setBackground(new Color(200, 200, 255, 230)); // 修改背景颜色为浅蓝色
+            setBorderPainted(false);
+            setFocusPainted(false);
+            
+            
+            }
+            
+            @Override
+            protected void paintComponent(Graphics g) {
+            Graphics2D g2 = (Graphics2D) g.create();
+            g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+            g2.setColor(getBackground());
+            g2.fill(new RoundRectangle2D.Double(0, 0, getWidth()-1, getHeight()-1, 10, 10));
+            super.paintComponent(g);
+            g2.dispose();
+            }
+        }
 
-        JButton ecbEncryptButton = new JButton("Encrypt (ECB)");
-        ecbEncryptButton.setFont(buttonFont);
-
-        JButton ecbDecryptButton = new JButton("Decrypt (ECB)");
-        ecbDecryptButton.setFont(buttonFont);
-
-        JButton cbcEncryptButton = new JButton("Encrypt (CBC)");
-        cbcEncryptButton.setFont(buttonFont);
-
-        JButton cbcDecryptButton = new JButton("Decrypt (CBC)");
-        cbcDecryptButton.setFont(buttonFont);
-
-        JButton clearButton = new JButton("Clear Logs");
-        clearButton.setFont(buttonFont);
+        JButton ecbEncryptButton = new StyledButton("Encrypt (ECB)");
+        JButton ecbDecryptButton = new StyledButton("Decrypt (ECB)");
+        JButton cbcEncryptButton = new StyledButton("Encrypt (CBC)");
+        JButton cbcDecryptButton = new StyledButton("Decrypt (CBC)");
+        JButton clearButton = new StyledButton("Clear Logs");
 
         ecbEncryptButton.setPreferredSize(new Dimension(130, 50));
         ecbDecryptButton.setPreferredSize(new Dimension(130, 50));
@@ -150,27 +195,34 @@ public class UI {
         centerPanel.add(cbcDecryptButton);
         centerPanel.add(clearButton);
         
-        // 底部面板 - 日志显示
-        JPanel bottomPanel = new JPanel(new BorderLayout());
-        bottomPanel.setBorder(BorderFactory.createTitledBorder("Processing Logs"));
-        bottomPanel.setBackground(Color.WHITE);
+        // 修改底部面板
+        RoundedPanel bottomPanel = new RoundedPanel(new BorderLayout());
+        bottomPanel.setBorder(BorderFactory.createCompoundBorder(
+            new EmptyBorder(5, 5, 5, 5),
+            BorderFactory.createTitledBorder(null, "Processing Logs",
+                TitledBorder.DEFAULT_JUSTIFICATION, TitledBorder.DEFAULT_POSITION,
+                new Font("Segoe UI", Font.BOLD, 12))
+        ));
+        bottomPanel.setBackground(new Color(245, 245, 250, 240));
         
         logArea = new JTextArea();
         logArea.setEditable(false);
         logArea.setLineWrap(true);
-        logArea.setFont(new Font("Roboto", Font.PLAIN, 14));
-        logArea.setBackground(new Color(245, 245, 245));
+        logArea.setFont(new Font("Consolas", Font.PLAIN, 13));
+        logArea.setBackground(new Color(250, 250, 255));
         logArea.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
         JScrollPane scrollPane = new JScrollPane(logArea);
         scrollPane.setPreferredSize(new Dimension(750, 300));
         bottomPanel.add(scrollPane, BorderLayout.CENTER);
         
-        // 状态栏
+        // 美化状态栏
         statusLabel = new JLabel("Ready");
-        statusLabel.setFont(new Font("Roboto", Font.BOLD, 12));
-        statusLabel.setBackground(new Color(200, 200, 200));
-        statusLabel.setOpaque(true);
-        statusLabel.setBorder(BorderFactory.createLoweredBevelBorder());
+        statusLabel.setFont(new Font("Segoe UI", Font.PLAIN, 12));
+        statusLabel.setBackground(new Color(245, 245, 250, 240));
+        statusLabel.setBorder(BorderFactory.createCompoundBorder(
+            new EmptyBorder(2, 5, 2, 5),
+            BorderFactory.createLineBorder(new Color(200, 200, 200))
+        ));
         statusLabel.setPreferredSize(new Dimension(800, 20));
         
         // 将面板添加到主面板
