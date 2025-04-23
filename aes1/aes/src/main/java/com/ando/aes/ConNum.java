@@ -4,19 +4,35 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.stereotype.Component;
 
 /**
- * @author Ando
- * @version 1.0
- * @date 2022/6/3
+ * 常量类，存储AES加密解密过程中所需的各种常量值
+ * 包括：S盒、逆S盒、列混淆矩阵、轮常量等
  */
 
 @Component
 public class ConNum {
 
-
+    /**
+     * 全零字符串，用于填充和位运算
+     */
     public static final String ZEROS = "00000000";
+    
+    /**
+     * 有限域GF(2^8)上的不可约多项式 x^8 + x^4 + x^3 + x + 1 的二进制表示
+     * 用于AES中的多项式乘法运算
+     */
     public static final String XOR_STR = "00011011";    // 84310
+    
+    /**
+     * CBC模式中使用的初始化向量(Initialization Vector)
+     * 用于增加加密算法的安全性，使得相同的明文加密后得到不同的密文
+     */
     public static final String IV = "NIfb&95GUY86Gfgh";
 
+    /**
+     * 列混淆变换矩阵
+     * 用于AES加密过程中的列混淆步骤
+     * 每列与该矩阵相乘，增加密文的扩散性
+     */
     public static final String[][] FIX_COLUMN = new String[][]{    // 列混淆变换
             {"02", "03", "01", "01"},
             {"01", "02", "03", "01"},
@@ -24,15 +40,31 @@ public class ConNum {
             {"03", "01", "01", "02"}
     };
 
+    /**
+     * 列混淆逆变换矩阵
+     * 用于AES解密过程中的逆列混淆步骤
+     * 是FIX_COLUMN矩阵的逆矩阵
+     */
     public static final String[][] FIX_COLUMN_INVERSE = new String[][]{    // 列混淆逆向变换
             {"0E", "0B", "0D", "09"},
             {"09", "0E", "0B", "0D"},
             {"0D", "09", "0E", "0B"},
             {"0B", "0D", "09", "0E"}
     };
-    //轮常量
+    
+    /**
+     * 轮常量数组
+     * 用于密钥扩展过程中，与每轮子密钥的首字节进行异或运算
+     * 增加子密钥之间的差异性
+     */
     public static final String[] RC = new String[]{"01", "02", "04", "08", "10", "20", "40", "80", "1B", "36"};
 
+    /**
+     * S盒(Substitution Box)
+     * 用于AES加密过程中的字节代替步骤
+     * 通过非线性变换增加加密算法的安全性
+     * 每个字节按照S盒进行替换
+     */
     public static final String[][] S = new String[][]{ //s盒
             {"63", "7c", "77", "7b", "f2", "6b", "6f", "c5", "30", "01", "67", "2b", "fe", "d7", "ab", "76"},
             {"ca", "82", "c9", "7d", "fa", "59", "47", "f0", "ad", "d4", "a2", "af", "9c", "a4", "72", "c0"},
@@ -50,9 +82,14 @@ public class ConNum {
             {"70", "3e", "b5", "66", "48", "03", "f6", "0e", "61", "35", "57", "b9", "86", "c1", "1d", "9e"},
             {"e1", "f8", "98", "11", "69", "d9", "8e", "94", "9b", "1e", "87", "e9", "ce", "55", "28", "df"},
             {"8c", "a1", "89", "0d", "bf", "e6", "42", "68", "41", "99", "2d", "0f", "b0", "54", "bb", "16"}
-
     };
 
+    /**
+     * 逆S盒(Inverse Substitution Box)
+     * 用于AES解密过程中的逆字节代替步骤
+     * 是S盒的逆变换，确保解密过程能够正确恢复原始明文
+     * 每个字节按照逆S盒进行替换
+     */
     public static final String[][] S_INVERSE = new String[][]{
             {"52", "09", "6a", "d5", "30", "36", "a5", "38", "bf", "40", "a3", "9e", "81", "f3", "d7", "fb"},
             {"7c", "e3", "39", "82", "9b", "2f", "ff", "87", "34", "8e", "43", "44", "c4", "de", "e9", "cb"},
@@ -70,6 +107,5 @@ public class ConNum {
             {"60", "51", "7f", "a9", "19", "b5", "4a", "0d", "2d", "e5", "7a", "9f", "93", "c9", "9c", "ef"},
             {"a0", "e0", "3b", "4d", "ae", "2a", "f5", "b0", "c8", "eb", "bb", "3c", "83", "53", "99", "61"},
             {"17", "2b", "04", "7e", "ba", "77", "d6", "26", "e1", "69", "14", "63", "55", "21", "0c", "7d"}
-
     };
 }

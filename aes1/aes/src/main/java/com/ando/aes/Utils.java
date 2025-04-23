@@ -5,9 +5,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 /**
- * @author Ando
- * @version 1.0
- * @date 2022/6/3
+ * AES算法工具类
+ * 提供AES加密和解密过程中所需的各种工具方法
+ * 包括矩阵分组、数据转换、位运算、密钥扩展等操作
  */
 
 @Component

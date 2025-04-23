@@ -13,9 +13,9 @@ import mdlaf.MaterialLookAndFeel;
 import mdlaf.themes.MaterialLiteTheme;
 import java.nio.charset.StandardCharsets; 
 /**
- * @author Ando
- * @version 2.0
- * @date 2022/6/3
+ * AES加密解密系统的图形用户界面
+ * 提供文件选择、加密解密操作和日志显示功能
+ * 支持ECB和CBC两种加密模式
  */
 public class UI {
 

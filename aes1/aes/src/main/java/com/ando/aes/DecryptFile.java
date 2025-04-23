@@ -3,9 +3,8 @@ package com.ando.aes;
 import java.io.*;
 
 /**
- * @author Ando
- * @version 1.0
- * @date 2022/6/3
+ * 文件解密工具类
+ * 提供对文件进行AES解密的功能，支持ECB和CBC两种模式
  */
 
 public class DecryptFile {
